@@ -1,6 +1,6 @@
-function Rename-ThailandFiles {
+function Rename-PictureFiles {
     param (
-        [string]$folderPath = "Thailand"
+        [string]$folderPath = Read-Host "please enter the folder name"
     )
 
     # Check if the folder exists
@@ -36,4 +36,4 @@ function Rename-ThailandFiles {
     }
 }
 
-# Usage: Rename-ThailandFiles -folderPath "C:\Path\To\Thailand"
+# Usage: Rename-PictureFiles -folderPath "C:\Path\To\some name"

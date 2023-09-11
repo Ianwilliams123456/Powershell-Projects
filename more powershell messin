@@ -12,3 +12,4 @@ write $sort.Enable
    # } 
   
 #Get-Aduser -Filter "name -eq 'Lizzie Terrell'" -properties * | Export-Csv -Path 'desktop\LizzieInfo.csv'
+#enabled -eq $true

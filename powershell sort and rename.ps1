@@ -1,6 +1,6 @@
 function Rename-PictureFiles {
     param (
-        [string]$folderPath = Read-Host "please enter the folder name, this name will also be the name of all folders within"
+        [string]$folderPath = c:\Users\ianwi\OneDrive\Desktop\retirementphotos To Mess With
     )
 
     # Check if the folder exists
@@ -17,13 +17,13 @@ function Rename-PictureFiles {
 
     # Rename each file
     foreach ($file in $files) {
-        $newName = "$folderPath$counter"
+        $newName = "'retirement'$counter"
         $newPath = Join-Path -Path $folderPath -ChildPath $newName
 
         # Check if the new name already exists, if so, increment the counter
         while (Test-Path -Path $newPath -PathType Leaf) {
             $counter++
-            $newName = "$folderPath$counter"
+            $newName = "$retirement$counter"
             $newPath = Join-Path -Path $folderPath -ChildPath $newName
         }
 

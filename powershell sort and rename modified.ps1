@@ -19,13 +19,13 @@ function Rename-PictureFiles {
 
     # Rename each file the parameter in newName will be the "First Name" of all files
     foreach ($file in $files) {
-        $newName = "retirement$counter"
+        $newName = "retirement$counter.$file.extension)"
         $newPath = Join-Path -Path $folderPath -ChildPath $newName
 
         # Check if the new name already exists, if so, increment the counter
         while (Test-Path -Path $newPath -PathType Leaf) {
             $counter++
-            $newName = "retirement$counter"
+            $newName = "retirement$counter.$file.extension"
             $newPath = Join-Path -Path $folderPath -ChildPath $newName
         }
 
@@ -39,3 +39,4 @@ function Rename-PictureFiles {
 }
 
 # Usage: Rename-PictureFiles -folderPath "C:\Path\To\some name"
+#Rename-PictureFiles

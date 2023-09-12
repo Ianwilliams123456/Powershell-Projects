@@ -1,0 +1,28 @@
+function Organize-FilesByExtension {
+    param (
+        [string]$SourceDirectory,
+        [string]$DestinationDirectory
+    )
+
+    # Create the destination directory if it doesn't exist
+    if (-not (Test-Path -Path $DestinationDirectory)) {
+        New-Item -ItemType Directory -Path $DestinationDirectory | Out-Null
+    }
+
+    # Get a list of files in the source directory
+    #done $Files = Get-ChildItem -Path $SourceDirectory -File
+
+    # Loop through each file and organize by extension
+    foreach ($File in $Files) {
+        $Extension = $File.Extension.TrimStart('.')
+        $ExtensionDirectory = Join-Path -Path $DestinationDirectory -ChildPath $Extension
+
+        # Create a directory for the extension if it doesn't exist
+        if (-not (Test-Path -Path $ExtensionDirectory)) {
+            New-Item -ItemType Directory -Path $ExtensionDirectory | Out-Null
+        }
+
+        # Move the file to the appropriate extension directory
+        Move-Item -Path $File.FullName -Destination $ExtensionDirectory
+    }
+}

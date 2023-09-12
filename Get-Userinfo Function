@@ -1,0 +1,25 @@
+Function Get-Userinfo{
+$users = get-aduser -filter * -Properties * | Select-Object Name,enabled,lockedout,AccountExpirationDate,lastlogondate
+#$users
+
+
+
+FOREACH ($user in $users) {
+
+$uname = $user.Name
+$uenabled = $user.enabled
+$ulockedout = $user.lockedout
+$uaccountexpy = $user.AccountExpirationDate
+$ulastlogon = $user.lastlogondate
+
+$uproperty = [ordered]@{'User Name' = $uname;
+'Enabled' = $uenabled;
+'Account Expiration' = $uaccountexpy;
+}
+
+
+$uobj = New-Object -TypeName PSObject -Property $uproperty
+$uobj | export-csv 'desktop\user_list.csv' -append
+Write-Output $uobj
+}
+}

@@ -6,7 +6,7 @@ $selection=read-host "please type user or computer"
 $sort=Import-Csv -Path $ObjectExportPath
 write $sort.Enable
 #foreach ($idea in $sort){ 
-   # if (($idea.objectclass -eq $selection) -and ($idea.Enable -eq 'TRUE'))
+   # if (($idea.objectclass -eq $selection) -and (enabled -eq $True))
    # {
    # $idea | Export-Csv -Path $SortedObjectPath -append}
    # } 

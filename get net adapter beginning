@@ -1,0 +1,3 @@
+Get-NetAdapter | select-object interfaceDescription, name, status, linkSpeed
+Get-NetAdapter -name *wi-fi* | select interfaceDescription, name, status, linkSpeed
+Get-NetAdapter -name * -CimSession "lon-dc1","lon-svr1" | Select-Object PSComputername, interfacename, interfacedescription, status, linkspeed | FL

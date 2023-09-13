@@ -1,0 +1,10 @@
+function Get-SecurityEvents{
+    param(
+    [string]$backdays = (Read-Host "please enter the number of days to look back"),`
+    [string]$backevents = (Read-Host "please enter the number of events to look back")
+    )
+
+Get-eventlog -logname security -ComputerName lon-dc1, lon-svr1, lon-cl1 -Newest $backevents -After (get-date).AddDays(-$backdays)`
+ | Select-object -property machinename, index, timewritten, entrytype, source, instanceid, message | FL
+
+}

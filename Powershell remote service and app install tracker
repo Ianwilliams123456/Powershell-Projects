@@ -4,7 +4,7 @@ function Get-InstallEvents{
     [string]$backevents = (Read-Host "please enter the number of events to look back")
     )
 
-Get-eventlog -logname system -instanceid 11707,1033,4697 -ComputerName lon-dc1, lon-svr1 -Newest $backevents -After (get-date).AddDays(-$backdays)`
+Get-eventlog -logname system -instanceid 11707,1033, 4697 -ComputerName lon-dc1, lon-svr1 -Newest $backevents -After (get-date).AddDays(-$backdays)`
  | Select-object -property machinename, index, timewritten, entrytype, source, instanceid, message | FL
 
 }

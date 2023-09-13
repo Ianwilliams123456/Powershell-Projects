@@ -2,7 +2,7 @@ function Sort-MediaFiles {
     #establish the path, I used items on my desktop
     
     param (
-        [string]$folderPath = 'c:\Users\ianwi\OneDrive\Desktop\retirementphotos To Mess With'
+        [string]$folderPath = (read-host "Please enter the path")
         
     )
 

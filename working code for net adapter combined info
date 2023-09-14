@@ -26,6 +26,30 @@ foreach($computer in $domaincomputers){
     $netinfo = Get-NetAdapter -name * -Cimsession "$computer"  
     $os = Get-CimInstance -ClassName Win32_operatingsystem -ComputerName $Computer -ErrorAction SilentlyContinue 
     $cdrive = Get-WMIObject win32_logicaldisk -filter "DeviceID='c:'" -computername $Computer -ErrorAction SilentlyContinue
-    write-output $netinfo,$os,$cdrive
-    }
+    $Properties = [ordered]@{'Computername' = $Computer;
+                'OS'                                = $os.Caption;
+                'C:_GB_Free'                        = ($cdrive.FreeSpace / 1GB -as [int]);
+                'interfacename'                     = $netinfo.interfacename;
+                'interfacedescription'              = $netinfo.interfacedescription;
+                'networkstatus'                     = $netinfo.Status;
+                'linkspeed'                         = $netinfo.LinkSpeed;
+                }
+write-output $Properties | FT
+
     
+    }
+$localnetinfo = Get-NetAdapter 
+$localos = Get-ComputerInfo
+$localcdrive = Get-Volume -DriveLetter C 
+#$localcdrive
+#$localnetinfo
+#$localos
+$LProperties = [ordered]@{'Computername' = $localnetinfo.PScomputername;
+                'OS'                                = $localos.Caption;
+                'C:_GB_Free'                        = ($localcdrive.spaceremaining / 1GB -as [int]);
+                'interfacename'                     = $localnetinfo.interfacename;
+                'interfacedescription'              = $localnetinfo.interfacedescription;
+                'networkstatus'                     = $localnetinfo.Status;
+                'linkspeed'                         = $localnetinfo.LinkSpeed;
+                }
+write-output $LProperties | FT

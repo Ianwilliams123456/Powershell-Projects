@@ -27,33 +27,46 @@ foreach($computer in $domaincomputers){
     $os = Get-CimInstance -ClassName Win32_operatingsystem -ComputerName $Computer -ErrorAction SilentlyContinue 
     $cdrive = Get-WMIObject win32_logicaldisk -filter "DeviceID='c:'" -computername $Computer -ErrorAction SilentlyContinue
     $ipaddress = Get-Netipaddress -Cimsession "$computer" -InterfaceAlias ethernet -ErrorAction SilentlyContinue
+    # Extract IPv4 and IPv6 addresses from the $localipinfo object
+$ipv4Addresses = $ipaddress | Where-Object { $_.AddressFamily -eq 'IPv4' } | ForEach-Object { $_.IPAddress }
+$ipv6Addresses = $ipaddress | Where-Object { $_.AddressFamily -eq 'IPv6' } | ForEach-Object { $_.IPAddress }
+    
+    
     $Properties = [ordered]@{'Computername' = $Computer;
                 'OS'                                = $os.Caption;
-                'C:_GB_Free'                        = ($cdrive.FreeSpace / 1GB -as [int]);
-                'ipv4address'                       = $ipaddress.IPv4Address;
-                'ipv6address'                       = $ipaddress.IPv6Address;
+                'C:_GB_Free'                        = [math]::round($cdrive.FreeSpace / 1GB);
+                'ipv4address'                       = $ipv4Addresses -join ', ' # Join IPv4 addresses if there are multiple
+                'ipv6address'                       = $ipv6Addresses -join ', ' # Join IPv6 addresses if there are multiple
                 'interfacename'                     = $netinfo.interfacename;
                 'interfacedescription'              = $netinfo.interfacedescription;
                 'networkstatus'                     = $netinfo.Status;
                 'linkspeed'                         = $netinfo.LinkSpeed;
                 }
-write-output $Properties | FT
+write-output $Properties | FT -AutoSize
 
     
     }
-$localnetinfo = Get-NetAdapter 
+$localnetinfo = Get-NetAdapter
 $localos = Get-ComputerInfo
-$localcdrive = Get-Volume -DriveLetter C 
+$localcdrive = Get-Volume -DriveLetter C
 $localipinfo = Get-NetIPAddress -InterfaceAlias ethernet
-$LProperties = [ordered]@{'Computername' = $localos.csname;
-                'OS'                                = $localos.osname;
-                'C:_GB_Free'                        = ($localcdrive.spaceremaining / 1GB -as [int]);
-                'ipv4address'                       = $localipinfo.IPv4Address;
-                'ipv6address'                       = $localipinfo.IPv6Address;
-                'interfacename'                     = $localnetinfo.interfacename;
-                'interfacedescription'              = $localnetinfo.interfacedescription;
-                'networkstatus'                     = $localnetinfo.Status;
-                'linkspeed'                         = $localnetinfo.LinkSpeed;
-                }
-write-output $LProperties | FT
+
+# Extract IPv4 and IPv6 addresses from the $localipinfo object
+$lipv4Addresses = $localipinfo | Where-Object { $_.AddressFamily -eq 'IPv4' } | ForEach-Object { $_.IPAddress }
+$lipv6Addresses = $localipinfo | Where-Object { $_.AddressFamily -eq 'IPv6' } | ForEach-Object { $_.IPAddress }
+
+$LProperties = [ordered]@{
+    'Computername'        = $localos.CSName
+    'OS'                  = $localos.OSName
+    'C:_GB_Free'          = [math]::Round($localcdrive.SpaceRemaining / 1GB)
+    'IPv4Address'         = $lipv4Addresses -join ', ' # Join IPv4 addresses if there are multiple
+    'IPv6Address'         = $lipv6Addresses -join ', ' # Join IPv6 addresses if there are multiple
+    'InterfaceName'       = $localnetinfo.InterfaceName
+    'InterfaceDescription'= $localnetinfo.InterfaceDescription
+    'NetworkStatus'       = $localnetinfo.Status
+    'LinkSpeed'           = $localnetinfo.LinkSpeed
+}
+
+# Display the properties using Format-Table
+$LProperties | FT -AutoSize
 

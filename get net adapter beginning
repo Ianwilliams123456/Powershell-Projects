@@ -1,3 +1,32 @@
 Get-NetAdapter | select-object interfaceDescription, name, status, linkSpeed
 Get-NetAdapter -name *wi-fi* | select interfaceDescription, name, status, linkSpeed
 Get-NetAdapter -name * -CimSession "lon-dc1","lon-svr1" | Select-Object PSComputername, interfacename, interfacedescription, status, linkspeed | FL
+
+# Import the Active Directory module if not already loaded
+Import-Module ActiveDirectory
+
+# Get all networked computers in the specified domain and store them in an array
+$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
+# Display the list of networked computers
+$computers
+
+# Import the Active Directory module if not already loaded
+#Import-Module ActiveDirectory
+
+# Get all networked computers in the specified domain and store them in an array
+$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
+# Display the list of networked computers
+#$computers
+
+foreach($computer in $computers){
+    if($computer = "lon-cl1"){
+    $cnetinfo2=Get-NetAdapter | Select-Object PScomputername, interfacename, interfacedescription, status, linkspeed | FL
+    write-output $cnetinfo2
+    }
+    else{($cnetinfo=Get-NetAdapter -name * -CimSession "$computer" | Select-Object PSComputername, interfacename, interfacedescription, status, linkspeed | FL)
+    
+    write-output $cnetinfo
+    }
+    }

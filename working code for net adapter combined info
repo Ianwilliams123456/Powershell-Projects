@@ -1,0 +1,31 @@
+# Import the Active Directory module if not already loaded
+Import-Module ActiveDirectory
+
+# Get the local computer's hostname
+$localComputerName = $env:COMPUTERNAME
+
+# Get the local computer's IP address
+$localIPAddress = (Get-NetIPAddress | Where-Object { $_.AddressFamily -eq 'IPv4' }).IPAddress
+
+# Query Active Directory to get all domain-connected computers
+$allDomainComputers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
+# Exclude the local computer from the list
+$domainComputers = $allDomainComputers | Where-Object { $_ -ne $localComputerName -and $_ -ne $localIPAddress }
+
+# Display or use the list of domain-connected computers
+#$domainComputers
+
+# Get all networked computers in the specified domain and store them in an array
+#$domaincomputers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
+# Display the list of networked computers
+#$computers
+#| Select-Object PSComputername, interfacename, interfacedescription, status, linkspeed
+foreach($computer in $domaincomputers){
+    $netinfo = Get-NetAdapter -name * -Cimsession "$computer"  
+    $os = Get-CimInstance -ClassName Win32_operatingsystem -ComputerName $Computer -ErrorAction SilentlyContinue 
+    $cdrive = Get-WMIObject win32_logicaldisk -filter "DeviceID='c:'" -computername $Computer -ErrorAction SilentlyContinue
+    write-output $netinfo,$os,$cdrive
+    }
+    

@@ -1,0 +1,30 @@
+$localnetinfo = Get-NetAdapter
+$localos = Get-ComputerInfo
+$localcdrive = Get-Volume -DriveLetter C
+
+$LProperties = @()
+
+foreach ($adapter in $localnetinfo) {
+    $localipinfo = Get-NetIPAddress -InterfaceAlias $adapter.Name
+    
+    # Extract IPv4 and IPv6 addresses from the $localipinfo object
+    $lipv4Addresses = $localipinfo | Where-Object { $_.AddressFamily -eq 'IPv4' } | ForEach-Object { $_.IPAddress }
+    $lipv6Addresses = $localipinfo | Where-Object { $_.AddressFamily -eq 'IPv6' } | ForEach-Object { $_.IPAddress }
+    
+    $adapterProperties = [ordered]@{
+        'Computername'        = $localos.CSName
+        'OS'                  = $localos.OSName
+        'C:_GB_Free'          = [math]::Round($localcdrive.SpaceRemaining / 1GB)
+        'InterfaceName'       = $adapter.InterfaceName
+        'InterfaceDescription'= $adapter.InterfaceDescription
+        'NetworkStatus'       = $adapter.Status
+        'LinkSpeed'           = $adapter.LinkSpeed
+        'IPv4Address'         = $lipv4Addresses -join ', ' # Join IPv4 addresses if there are multiple
+        'IPv6Address'         = $lipv6Addresses -join ', ' # Join IPv6 addresses if there are multiple
+    }
+    
+    $LProperties += New-Object PSObject -Property $adapterProperties
+}
+
+# Display the properties using Format-Table
+$LProperties | Format-List

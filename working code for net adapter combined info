@@ -23,12 +23,15 @@ $domainComputers = $allDomainComputers | Where-Object { $_ -ne $localComputerNam
 #$computers
 #| Select-Object PSComputername, interfacename, interfacedescription, status, linkspeed
 foreach($computer in $domaincomputers){
-    $netinfo = Get-NetAdapter -name * -Cimsession "$computer"  
+    $netinfo = Get-NetAdapter -name * -Cimsession "$computer" -ErrorAction SilentlyContinue 
     $os = Get-CimInstance -ClassName Win32_operatingsystem -ComputerName $Computer -ErrorAction SilentlyContinue 
     $cdrive = Get-WMIObject win32_logicaldisk -filter "DeviceID='c:'" -computername $Computer -ErrorAction SilentlyContinue
+    $ipaddress = Get-Netipaddress -Cimsession "$computer" -InterfaceAlias ethernet -ErrorAction SilentlyContinue
     $Properties = [ordered]@{'Computername' = $Computer;
                 'OS'                                = $os.Caption;
                 'C:_GB_Free'                        = ($cdrive.FreeSpace / 1GB -as [int]);
+                'ipv4address'                       = $ipaddress.IPv4Address;
+                'ipv6address'                       = $ipaddress.IPv6Address;
                 'interfacename'                     = $netinfo.interfacename;
                 'interfacedescription'              = $netinfo.interfacedescription;
                 'networkstatus'                     = $netinfo.Status;
@@ -41,15 +44,16 @@ write-output $Properties | FT
 $localnetinfo = Get-NetAdapter 
 $localos = Get-ComputerInfo
 $localcdrive = Get-Volume -DriveLetter C 
-#$localcdrive
-#$localnetinfo
-#$localos
-$LProperties = [ordered]@{'Computername' = $localnetinfo.PScomputername;
-                'OS'                                = $localos.Caption;
+$localipinfo = Get-NetIPAddress -InterfaceAlias ethernet
+$LProperties = [ordered]@{'Computername' = $localos.csname;
+                'OS'                                = $localos.osname;
                 'C:_GB_Free'                        = ($localcdrive.spaceremaining / 1GB -as [int]);
+                'ipv4address'                       = $localipinfo.IPv4Address;
+                'ipv6address'                       = $localipinfo.IPv6Address;
                 'interfacename'                     = $localnetinfo.interfacename;
                 'interfacedescription'              = $localnetinfo.interfacedescription;
                 'networkstatus'                     = $localnetinfo.Status;
                 'linkspeed'                         = $localnetinfo.LinkSpeed;
                 }
 write-output $LProperties | FT
+

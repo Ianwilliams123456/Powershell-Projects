@@ -2,7 +2,8 @@ function Rename-MovieFiles {
     #establish the path, I used items on my desktop
     
     param (
-        [string]$folderPath = (read-host "Please paste the path for the folder")
+        [string]$folderPath = (read-host "Please paste the path for the folder"),
+        [string]$fname = (Read-Host "please enter the name you would like at the front of the files")
     )
 
     # Check if the folder exists
@@ -19,13 +20,13 @@ function Rename-MovieFiles {
 
     # Rename each file the parameter in newName will be the "First Name" of all files
     foreach ($file in $files) {
-        $newName = "retirement$counter.mp4"
+        $newName = "$fname$counter.mp4"
         $newPath = Join-Path -Path $folderPath -ChildPath $newName
 
         # Check if the new name already exists, if so, increment the counter
         while (Test-Path -Path $newPath -PathType Leaf) {
             $counter++
-            $newName = "retirement$counter.mp4"
+            $newName = "$fname$counter.mp4"
             $newPath = Join-Path -Path $folderPath -ChildPath $newName
         }
 
